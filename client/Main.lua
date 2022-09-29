@@ -17,7 +17,7 @@ RegisterNetEvent("donator:createMenu", function()
       isMenuHeader = true
     }
 
-    for k,v in pairs(Config.Donations) do 
+    for k,v in pairs(Config.CoinShop) do 
         menu[#menu+1] = {
             header = v["header"],
             text = v["text"],
@@ -34,6 +34,7 @@ RegisterNetEvent("donator:createMenu", function()
 end)
 
 CreateThread(function()
+
     local blip = AddBlipForCoord(Config.NPC)
     SetBlipSprite(blip, 351)
     SetBlipScale(blip, 1.0)
@@ -67,12 +68,10 @@ end)
 
 RegisterNetEvent("donator:spawnVehicle", function(model, plate)
     QBCore.Functions.SpawnVehicle(model, function(veh)
-        SetEntityHeading(veh, Config.VehicleSpawn.w)
+      
         SetVehicleEngineOn(veh, false, false)
         SetVehicleOnGroundProperly(veh)
         SetVehicleNumberPlateText(veh, plate)
-    
-        exports['cdn-fuel']:SetFuel(veh, 100.0)
         TriggerEvent('vehiclekeys:client:SetOwner', plate)
         
     end, Config.VehicleSpawn, true)

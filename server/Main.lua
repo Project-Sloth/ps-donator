@@ -123,3 +123,44 @@ QBCore.Commands.Add('setcoins', 'Set Player Coins (God Only)', { { name = 'id', 
     end
 end, 'god')
 
+-- REDEMPTION
+
+QBCore.Commands.Add('redeem', 'Redeem tebex store purchase', { { name = 'id', help = 'tebex transaction id' }}, true, function(source, args)
+    
+    local transactionId = args[1]
+    local pending = MySQL.query.await('SELECT TOP 1 (*) FROM donator_pending WHERE transactionId = ?', { transactionId })
+    if pending[1] then
+        if pending[1].redeemed == 0 then
+            local Player = QBCore.Functions.GetPlayer(source)
+            local license = Player.PlayerData.license
+            AddCoins(license, Config.Packages[pending[1].package])
+            print(string.format("License: %s redeemed %s", license, transactionId))
+            MySQL.update.await('UPDATE donator_pending SET redeemed = 1 WHERE transactionId = ?', { data.transactionId })
+        else
+            TriggerClientEvent("QBCore:Notify", source, "This package has already been redeemed", "error")
+        end
+    else
+        TriggerClientEvent("QBCore:Notify", source, "Invalid transaction id", "error")
+    end
+end, 'user')
+
+RegisterCommand("donatorPurchase", function(source, args)
+    if source == 0 then
+        local data = json.decode(args[1])
+
+        local pending = MySQL.query.await('SELECT transactionId, redeemed FROM donator_pending WHERE transactionId = ?', { data.transactionId })
+        if pending[1] and pending[1].redeemed == 0 then
+            local affectedRows = MySQL.update.await('UPDATE donator_pending SET package = ? WHERE transactionId = ?', { data.package, data.transactionId })
+            if affectedRows then
+                print(string.format("Added new pending redeem ID: %s Package: %s", data.transactionId, data.package))
+            else
+                print(string.format("Error adding redeem ID: %s Package: %s", data.transactionId, data.package))
+            end
+        else
+            MySQL.Async.insert('INSERT INTO donator_pending (transactionId, package) VALUES (?, ?)', { data.transactionId, data.package })
+            print(string.format("Added ID: %s Package: %s", data.transactionId, data.package))
+        end
+    else
+        print(string.format("ID: %s tried to create a pending package", source))
+    end
+end, false)

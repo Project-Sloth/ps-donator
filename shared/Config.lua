@@ -5,7 +5,7 @@ Config.Model = "cs_fbisuit_01"
 Config.VehicleSpawn = vector4(180.45, -923.15, 30.69, 230.33)
 Config.Garage = "garage1" -- Default garage for the car to be tagged too.
 
-Config.Donations = {
+Config.CoinShop = {
     [1] = {
         type = "item",
         name = "weapon_pistol",
@@ -21,4 +21,9 @@ Config.Donations = {
         header = "Buy Sultan",
         text = "Buy a Sultan for 1 coin.",
     },
+}
+
+Config.Packages = {
+    ["coinpack1"] = 100,
+    ["coinpack2"] = 200,
 }
