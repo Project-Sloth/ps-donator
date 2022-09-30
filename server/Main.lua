@@ -127,17 +127,22 @@ end, 'god')
 
 QBCore.Commands.Add('redeem', 'Redeem tebex store purchase', { { name = 'id', help = 'tebex transaction id' }}, true, function(source, args)
     
-    local transactionId = args[1]
-    local pending = MySQL.query.await('SELECT TOP 1 (*) FROM donator_pending WHERE transactionId = ?', { transactionId })
-    if pending[1] then
-        if pending[1].redeemed == 0 then
-            local Player = QBCore.Functions.GetPlayer(source)
-            local license = Player.PlayerData.license
-            AddCoins(license, Config.Packages[pending[1].package])
-            print(string.format("License: %s redeemed %s", license, transactionId))
-            MySQL.update.await('UPDATE donator_pending SET redeemed = 1 WHERE transactionId = ?', { data.transactionId })
+    if args[1] then
+        local transactionId = args[1]
+        local pending = MySQL.query.await('SELECT * FROM donator_pending WHERE transactionId = ?  LIMIT 1', { transactionId })
+        if pending[1] then
+            if pending[1].redeemed == 0 then
+                local Player = QBCore.Functions.GetPlayer(source)
+                local license = Player.PlayerData.license
+                AddCoins(license, Config.Packages[pending[1].package])
+                print(string.format("License: %s redeemed %s", license, transactionId))
+                TriggerClientEvent("QBCore:Notify", source, "Purchase Redeemed", "success")
+                MySQL.update.await('UPDATE donator_pending SET redeemed = 1 WHERE transactionId = ?', { transactionId })
+            else
+                TriggerClientEvent("QBCore:Notify", source, "This package has already been redeemed", "error")
+            end
         else
-            TriggerClientEvent("QBCore:Notify", source, "This package has already been redeemed", "error")
+            TriggerClientEvent("QBCore:Notify", source, "Invalid transaction id", "error")
         end
     else
         TriggerClientEvent("QBCore:Notify", source, "Invalid transaction id", "error")
