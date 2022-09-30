@@ -70,31 +70,31 @@ RegisterNetEvent("donator:purchase", function(data)
         print("Cheater tried to access the donator store from too far away! ID: " .. src)
         return
     end
-    if ID == nil or Config["Donations"][ID] == nil then -- Check to see if passed ID is actually a valid ID
+    if ID == nil or Config.CoinShop[ID] == nil then -- Check to see if passed ID is actually a valid ID
         print("Cheater tried to access an invalid donator item! ID: " .. src)
         return
     end
     local Player = QBCore.Functions.GetPlayer(src)
-    if RemoveCoins(Player.PlayerData.license, Config["Donations"][ID]["cost"]) then
+    if RemoveCoins(Player.PlayerData.license, Config.CoinShop[ID]["cost"]) then
 
-        if Config["Donations"][ID]["type"] == "item" then
-            Player.Functions.AddItem(Config["Donations"][ID]["name"], Config["Donations"][ID]["amount"])
-            TriggerClientEvent("inventory:client:ItemBox", src, QBCore.Shared.Items[Config["Donations"][ID]["name"]], "add")
-        elseif Config["Donations"][ID]["type"] == "car" then 
+        if Config.CoinShop[ID]["type"] == "item" then
+            Player.Functions.AddItem(Config.CoinShop[ID]["name"], Config.CoinShop[ID]["amount"])
+            TriggerClientEvent("inventory:client:ItemBox", src, QBCore.Shared.Items[Config.CoinShop[ID]["name"]], "add")
+        elseif Config.CoinShop[ID]["type"] == "car" then 
 
             local plate = GeneratePlate()
             MySQL.Async.insert('INSERT INTO player_vehicles (license, citizenid, vehicle, hash, mods, plate, state, garage) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', {
                 Player.PlayerData.license,
                 Player.PlayerData.citizenid,
-                Config["Donations"][ID]["name"],
-                GetHashKey(Config["Donations"][ID]["name"]),
+                Config.CoinShop[ID]["name"],
+                GetHashKey(Config.CoinShop[ID]["name"]),
                 '{"engineHealth":1000.00,"bodyHealth":1000.00,"fuelLevel":100.0,"tankHealth":1000.00,}',
                 plate,
                 1,
                 Config.Garage,
             })
 
-            TriggerClientEvent("donator:spawnVehicle", src, Config["Donations"][ID]["name"], plate)
+            TriggerClientEvent("donator:spawnVehicle", src, Config.CoinShop[ID]["name"], plate)
         end
     else 
         TriggerClientEvent("QBCore:Notify", src, "You do not have enough coins to purchase this item!", "error")
