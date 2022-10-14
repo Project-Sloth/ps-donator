@@ -1,4 +1,4 @@
-
+#
 # Instructions
 Run the sql code in donator.sql to your database.
 
@@ -14,7 +14,7 @@ donatorPurchase {"transactionId":"{transaction}", "package":"{packageName}"}
 ![image](https://user-images.githubusercontent.com/7463741/193162202-93c9245d-c49e-4837-922c-53fe3a273c63.png)
 
 IMPORTANT
-The packagename in the config needs to MACTH the package name in tebex.
+The packagename in the config needs to MATCH the package name in tebex.
 So if you have a package named "coinpack1" in tebex then you need to have
 ```
     ["coinpack1"] = CoinAmountHere,
