@@ -16,10 +16,9 @@ donatorPurchase {"transactionId":"{transaction}", "package":"{packageName}"}
 
 IMPORTANT
 The packagename in the config needs to MATCH the package name in tebex.
-So if you have a package named "coinpack1" in tebex then you need to have
+So if you have a package named "coinpack1" in tebex then you need to have in the config.
 ```
     ["coinpack1"] = CoinAmountHere,
 ```
-in the config.
 
 Players can use the /redeem transactionId in game to have their coins added.
