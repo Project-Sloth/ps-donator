@@ -68,11 +68,13 @@ end)
 
 RegisterNetEvent("donator:spawnVehicle", function(model, plate)
     QBCore.Functions.SpawnVehicle(model, function(veh)
-      
+        local playerPed = GetPlayerPed(-1)
+        local driverSeat = -1  -- Driver's seat
+        TaskWarpPedIntoVehicle(playerPed, veh, driverSeat)
+        
         SetVehicleEngineOn(veh, false, false)
         SetVehicleOnGroundProperly(veh)
         SetVehicleNumberPlateText(veh, plate)
         TriggerEvent('vehiclekeys:client:SetOwner', plate)
-        
     end, Config.VehicleSpawn, true)
 end)
