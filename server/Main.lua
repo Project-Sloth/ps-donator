@@ -32,20 +32,33 @@ end
 
 local function AddCoins(license, amount)
     local coins = GetCoins(license)
+    if coins == nil then
+        coins = 0
+    end
+
+    if amount == nil then
+        amount = 0
+    end
+
     coins = coins + amount
 
     local affectedRows = MySQL.update.await('UPDATE donator SET coins = ? WHERE license = ?', { coins, license })
     if affectedRows then
-        print(string.format("Added %s to %s", coins, license))
+        print(string.format("Added %s to %s", amount, license))
     else
         MySQL.Async.insert('INSERT INTO donator (license, coins) VALUES (?, ?)', { license, coins })
-        print(string.format("Added %s to %s", coins, license))
+        print(string.format("Added %s to %s", amount, license))
     end
 end
 
+
 local function RemoveCoins(license, amount)
     local coins = GetCoins(license)
-    local total = (coins - amount)
+    if coins == nil then
+        return false -- Handle the case where coins is nil
+    end
+
+    local total = coins - (amount or 0) -- Use amount or 0 to avoid performing arithmetic on a nil value
     if total < 0 then
         return false
     else
@@ -53,6 +66,7 @@ local function RemoveCoins(license, amount)
         return true
     end
 end
+
 
 QBCore.Functions.CreateCallback("donator:GetCoins", function(source, cb)
     local src = source
@@ -101,27 +115,29 @@ RegisterNetEvent("donator:purchase", function(data)
     end
 end)
 
-QBCore.Commands.Add('addcoins', 'Give Player Coins (God Only)', { { name = 'id', help = 'ID of player' }, { name = "amount", help = "Number of coins to add" }}, true, function(source, args)
-    local src = source
-    local Player = QBCore.Functions.GetPlayer(tonumber(args[1]))
 
-    if Player then
-        AddCoins(Player.PlayerData.license, tonumber(args[2]))
-    else
-        TriggerClientEvent('QBCore:Notify', src, "Player not online", 'error')
-    end
-end, 'god')
+--uncomment if you  wish to be able to have staff add coins
+-- QBCore.Commands.Add('addcoins', 'Give Player Coins (God Only)', { { name = 'id', help = 'ID of player' }, { name = "amount", help = "Number of coins to add" }}, true, function(source, args)
+--     local src = source
+--     local Player = QBCore.Functions.GetPlayer(tonumber(args[1]))
 
-QBCore.Commands.Add('setcoins', 'Set Player Coins (God Only)', { { name = 'id', help = 'ID of player' }, { name = "amount", help = "Number of coins to set" }}, true, function(source, args)
-    local src = source
-    local Player = QBCore.Functions.GetPlayer(tonumber(args[1]))
+--     if Player then
+--         AddCoins(Player.PlayerData.license, tonumber(args[2]))
+--     else
+--         TriggerClientEvent('QBCore:Notify', src, "Player not online", 'error')
+--     end
+-- end, 'god')
 
-    if Player then
-        SetCoins(Player.PlayerData.license, tonumber(args[2]))
-    else
-        TriggerClientEvent('QBCore:Notify', src, "Player not online", 'error')
-    end
-end, 'god')
+-- QBCore.Commands.Add('setcoins', 'Set Player Coins (God Only)', { { name = 'id', help = 'ID of player' }, { name = "amount", help = "Number of coins to set" }}, true, function(source, args)
+--     local src = source
+--     local Player = QBCore.Functions.GetPlayer(tonumber(args[1]))
+
+--     if Player then
+--         SetCoins(Player.PlayerData.license, tonumber(args[2]))
+--     else
+--         TriggerClientEvent('QBCore:Notify', src, "Player not online", 'error')
+--     end
+-- end, 'god')
 
 -- REDEMPTION
 
