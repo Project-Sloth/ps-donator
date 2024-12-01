@@ -1,5 +1,10 @@
 ![image](https://user-images.githubusercontent.com/82112471/195740699-7fe040c6-bd35-4376-85c0-b045aa8ff4e4.png)
 
+# Requirements
+[ox_inventory](https://github.com/overextended/ox_inventory)
+[ox_lib](https://github.com/overextended/ox_lib)
+[oxmysql](https://github.com/overextended/oxmysql)
+
 # Instructions
 Run the sql code in donator.sql to your database.
 

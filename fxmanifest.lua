@@ -1,13 +1,19 @@
 fx_version 'cerulean'
 games { 'gta5' }
+lua54 'yes'
+version '2.0.0'
 
 author 'devyn'
 
-client_script "client/Main.lua"
+client_script 'client/client.lua'
+
 server_scripts {
     '@oxmysql/lib/MySQL.lua',
-    "server/Main.lua",
+    "server/server.lua",
 }
 
-shared_script "shared/Config.lua"
-lua54 'yes'
+shared_scripts {
+    '@ox_lib/init.lua',
+    'config/config.lua',
+}
+
