@@ -32,7 +32,7 @@ end
 
 local function AddCoins(license, amount)
     local coins = GetCoins(license)
-    coins = coins + amount
+    coins += amount
 
     local affectedRows = MySQL.update.await('UPDATE donator SET coins = ? WHERE license = ?', { coins, license })
     if affectedRows then
@@ -233,12 +233,12 @@ lib.addCommand('redeem', {
 }, function(source, args, raw)
 
     local transactionId = args.id
-    local pending = MySQL.query.await('SELECT * FROM donator_pending WHERE transactionId = ?  LIMIT 1', { transactionId })
+    local pending = MySQL.query.await('SELECT * FROM donator_pending WHERE transactionId = ? LIMIT 1', { transactionId })
     if pending[1] then
         if pending[1].redeemed == 0 then
             local license = GetPlayerIdentifierByType(source, 'license')
 
-            AddCoins(license, config.shop[pending[1].package].cost)
+            AddCoins(license, config.packages[pending[1].package])
             lib.logger(-1, 'donator_redeem', string.format("License: %s redeemed %s", license, transactionId))
 
             TriggerClientEvent("ox_lib:notify", source, {
@@ -270,8 +270,18 @@ end)
 RegisterCommand("donatorPurchase", function(source, args)
     -- Only allow console to run this command.
     if source ~= 0 then return end
+    print(string.format("New Donator Purchase Details: %s", json.encode(args)))
+    local data = json.decode(args[1]) or {}
 
-    local data = json.decode(args[1])
+    if not data.transactionId  then
+        data.transactionId = args[1]
+        data.package = args[2]
+    end
+
+    if not data.transactionId then
+        print("Invalid purchase")
+        return
+    end
 
     local pending = MySQL.query.await('SELECT transactionId, redeemed FROM donator_pending WHERE transactionId = ?', { data.transactionId })
     if pending[1] and pending[1].redeemed == 0 then
